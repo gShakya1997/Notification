@@ -6,6 +6,8 @@ import androidx.core.app.NotificationManagerCompat;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -14,6 +16,7 @@ public class MainActivity extends AppCompatActivity {
     private NotificationManagerCompat notificationManagerCompat;
     private Button btn1, btn2;
     private int id = 1;
+    BroadcastReceiverExample broadcastReceiverExample = new BroadcastReceiverExample();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +43,19 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(broadcastReceiverExample, intentFilter);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unregisterReceiver(broadcastReceiverExample);
+    }
+
     private void displayNotification() {
         Notification notification = new NotificationCompat.Builder
                 (this, CreateChannel.CHANNEL_1)
@@ -49,8 +65,8 @@ public class MainActivity extends AppCompatActivity {
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .build();
 
-            notificationManagerCompat.notify(id, notification);
-            id++;
+        notificationManagerCompat.notify(id, notification);
+        id++;
     }
 
     private void displayNotification2() {
